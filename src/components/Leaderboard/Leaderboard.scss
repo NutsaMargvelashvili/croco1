@@ -1,0 +1,45 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.leaderboard {
+  &-container {
+    max-width: 600px;
+    margin: $spacing-lg auto;
+    @include card;
+  }
+
+  h2 {
+    text-align: center;
+    color: $text-color;
+    margin-bottom: $spacing-lg;
+    font-size: $font-size-xl;
+  }
+
+  &-list {
+    @include flex-column;
+    gap: $spacing-sm;
+  }
+
+  &-entry {
+    @include flex-between;
+    padding: $spacing-sm $spacing-md;
+    background-color: $background-light;
+    border-radius: $border-radius-sm;
+    transition: background-color $transition-base;
+
+    &:hover {
+      background-color: darken($background-light, 5%);
+    }
+  }
+}
+
+.player {
+  &-name {
+    font-weight: 500;
+  }
+
+  &-score {
+    font-weight: bold;
+    color: $primary-color;
+  }
+} 

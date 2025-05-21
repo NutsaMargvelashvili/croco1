@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchGames } from '../../services/gameService';
 import { useGlobal } from '../../context/GlobalContext';
-import './Game.css';
+import './Game.scss';
 
 const Game = () => {
   const { globalConfig, fetchEndpoint } = useGlobal();

@@ -1,0 +1,91 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.game {
+  &-container {
+    max-width: $breakpoint-desktop;
+    @include container;
+  }
+
+  &-header {
+    @include flex-between;
+    margin-bottom: $spacing-lg;
+  }
+
+  &-controls {
+    @include flex-center;
+    gap: $spacing-lg;
+
+    select {
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $border-radius-sm;
+      border: 1px solid darken($background-light, 10%);
+      font-size: $font-size-base;
+      min-width: 200px;
+    }
+  }
+
+  &-area {
+    background-color: $background-light;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    min-height: 400px;
+    @include flex-column;
+    align-items: center;
+  }
+
+  &-frame {
+    &-container {
+      width: 100%;
+      height: 600px;
+      background: $white;
+      border-radius: $border-radius-md;
+      overflow: hidden;
+      box-shadow: $shadow-sm;
+    }
+
+    &.game-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  }
+
+  &-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba($white, 0.95);
+    padding: $spacing-lg;
+    border-radius: $border-radius-md;
+    text-align: center;
+    box-shadow: $shadow-md;
+  }
+
+  &-loading {
+    text-align: center;
+    padding: $spacing-lg;
+    font-size: $font-size-lg;
+    color: lighten($text-color, 20%);
+  }
+
+  &-error {
+    text-align: center;
+    padding: $spacing-lg;
+    color: $error-color;
+    background: $error-bg;
+    border-radius: $border-radius-md;
+    margin: $spacing-sm 0;
+  }
+}
+
+.score {
+  font-size: $font-size-xl;
+  font-weight: bold;
+  color: $text-color;
+}
+
+button {
+  @include button-base;
+} 

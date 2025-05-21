@@ -1,0 +1,37 @@
+@import './styles/variables';
+@import './styles/mixins';
+
+#root {
+  max-width: $breakpoint-desktop;
+  margin: 0 auto;
+  padding: $spacing-lg;
+  text-align: center;
+}
+
+.app {
+  &-container {
+    @include flex-column;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: $font-size-xxl;
+    color: $primary-color;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.content {
+  @include flex-column;
+  gap: $spacing-lg;
+  padding: $spacing-lg;
+
+  @include responsive($breakpoint-tablet) {
+    flex-direction: row;
+    align-items: flex-start;
+
+    > * {
+      flex: 1;
+    }
+  }
+} 

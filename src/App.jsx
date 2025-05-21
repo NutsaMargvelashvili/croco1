@@ -1,7 +1,7 @@
 import { GlobalProvider } from './context/GlobalContext'
 import Game from './components/Game/Game'
 import Leaderboard from './components/Leaderboard/Leaderboard'
-import './App.css'
+import './App.scss'
 
 function App() {
   return (
