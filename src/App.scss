@@ -27,7 +27,7 @@
   padding: $spacing-lg;
 
   @include responsive($breakpoint-tablet) {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
 
     > * {

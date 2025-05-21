@@ -61,10 +61,17 @@ export const GlobalProvider = ({ children }) => {
       const token = urlParams.get("token") ||
         "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJQbGF5ZXJJZCI6IjEiLCJVc2VyTmFtZSI6ImFjaGFuZ2VsaWEiLCJTZWdtZW50SWRzIjoiZGVmYXVsdCIsImV4cCI6MjM0MDY1Mjk0MywiaXNzIjoiSFVCIiwiYXVkIjoiSFVCLUFVRElFTkNFIn0.usZBHjkuF74VbvCBoiVza0yFll0uSntmvC8_UKNd2kE7Ez5MmZlJoJHsCkjdF2rHD0kh8F1iyiFIIjVi1zsx-Q";
 
+      const externalId = urlParams.get("externalId") || 
+                        urlParams.get("externalid") || 
+                        urlParams.get("external-id") || 
+                        urlParams.get("leaderboardId") || 
+                        urlParams.get("leaderboardid");
+
       setGlobalConfig(prev => ({
         ...prev,
         promotionId,
-        token
+        token,
+        externalId
       }));
     };
 

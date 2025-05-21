@@ -1,6 +1,21 @@
 export const fetchEndpoint = async (promotion, options) => {
   try {
-    const response = await fetch(`${promotion.endpoint}${options.query ? `?id=${options.query.id}` : ''}`, {
+    let url = promotion.endpoint;
+    
+    // Handle query parameters
+    if (options.query && Object.keys(options.query).length > 0) {
+      const queryParams = new URLSearchParams();
+      Object.entries(options.query).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value);
+        }
+      });
+      url += `?${queryParams.toString()}`;
+    }
+
+    console.log('Making request to:', url);
+
+    const response = await fetch(url, {
       method: promotion.requestMethod,
       headers: {
         'Content-Type': 'application/json',
