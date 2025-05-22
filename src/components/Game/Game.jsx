@@ -87,21 +87,6 @@ const Game = () => {
   return (
     <div className="game-container">
       <div className="game-header">
-        <div className="game-controls">
-          <select 
-            value={currentGame?.name || ''} 
-            onChange={(e) => {
-              const game = games.find(g => g.name === e.target.value);
-              if (game) handleGameChange(game);
-            }}
-          >
-            {games.map(game => (
-              <option key={game.name} value={game.name}>
-                {game.name}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
       
       <div className="game-area">
