@@ -4,6 +4,8 @@ import Leaderboard from './components/Leaderboard/Leaderboard'
 import './App.scss'
 import Banner from './components/Banner/Banner'
 import Rules from './components/Rules/Rules'
+import Balance from './components/Balance/Balance'
+import Withdraw from './components/Withdraw/Withdraw'
 
 function App() {
   return (
@@ -12,7 +14,9 @@ function App() {
         <h1>Croco Promotion</h1>
         <div className="content">
           <Banner />
+          <Balance />
           <Game />
+          <Withdraw />
           <div className="leaderboards">
             <Leaderboard />
             <Leaderboard />

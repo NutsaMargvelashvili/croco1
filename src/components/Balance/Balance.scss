@@ -1,0 +1,61 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.balance {
+  @include card;
+  margin-bottom: $spacing-lg;
+  background-color: #0D2B3E;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 820px;
+}
+
+.balance-header {
+  padding: 16px 20px;
+  background-color: #0A1F2D;
+
+  h2 {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+.balance-content {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.balance-amount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #A4B6C6;
+
+  .amount {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .currency {
+    font-size: 14px;
+    color: #5C7D99;
+  }
+}
+
+.balance-loading {
+  text-align: center;
+  padding: $spacing-lg;
+  color: #A4B6C6;
+}
+
+.balance-error {
+  text-align: center;
+  padding: $spacing-lg;
+  color: $error-color;
+  background-color: rgba($error-color, 0.1);
+  border-radius: $border-radius-md;
+} 
