@@ -1,0 +1,124 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.rules {
+  @include card;
+  margin-bottom: $spacing-lg;
+  background-color: #0D2B3E;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 820px;
+}
+
+.rule-section {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.open {
+    .rule-header {
+      background-color: #0A1F2D;
+    }
+  }
+}
+
+.rule-header {
+  width: 100%;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0A1F2D;
+  }
+}
+
+// .rule-title {
+//   font-size: 18px;
+//   font-weight: 500;
+//   text-align: left;
+//   color: white;
+// }
+
+.rule-content {
+  background-color: #0A1F2D;
+  color: #A4B6C6;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 16px 20px;
+}
+
+.rule-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.open {
+    .rule-item-header {
+      background-color: #0D2B3E;
+    }
+  }
+}
+
+.rule-item-header {
+  width: 100%;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0D2B3E;
+  }
+}
+
+.rule-title, .rule-subtitle {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rule-arrow {
+  font-size: 12px;
+  color: #5C7D99;
+  transition: transform 0.3s ease;
+}
+
+.rule-item-content {
+  padding: 0 20px 16px;
+}
+
+.rule-text {
+  color: #A4B6C6;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.rules-loading {
+  text-align: center;
+  padding: $spacing-lg;
+  color: #A4B6C6;
+}
+
+.rules-error {
+  text-align: center;
+  padding: $spacing-lg;
+  color: $error-color;
+  background-color: rgba($error-color, 0.1);
+  border-radius: $border-radius-md;
+} 

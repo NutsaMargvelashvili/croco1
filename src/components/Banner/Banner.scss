@@ -1,0 +1,17 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.banner {
+  width: 100%;
+  margin-bottom: $spacing-lg;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  &-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+} 
