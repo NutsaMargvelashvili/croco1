@@ -1,5 +1,5 @@
 export const globals = {
   defaultLanguage: 'en',
-  promotionId: '188',
+  promotionId: '490',
   token: '',
 }; 

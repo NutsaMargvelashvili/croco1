@@ -17,10 +17,7 @@ function App() {
           <Balance />
           <Game />
           <Withdraw />
-          <div className="leaderboards">
-            <Leaderboard />
-            <Leaderboard />
-          </div>
+          <Leaderboard />
           <Rules />
         </div>
       </div>

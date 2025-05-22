@@ -97,7 +97,7 @@ const PROMOTION_SCHEMA = {
 
 export const fetchRules = async (fetchEndpoint, promotionId) => {
   const promotion = {
-    endpoint: "https://st-admapi.onaim.io/api/Builder/GetPromotionForBuilder",
+    endpoint: "http://192.168.88.201:5003/api/Builder/GetPromotionForBuilder",
     requestMethod: "GET",
     schemaType: {},
     endpointType: "DT",
