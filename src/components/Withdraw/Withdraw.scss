@@ -250,4 +250,23 @@
     background-color: #1a3f5d;
     cursor: not-allowed;
   }
+}
+
+.withdraw-status {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+
+  &.success {
+    background-color: rgba(10, 92, 45, 0.2);
+    color: #0A5C2D;
+  }
+
+  &.pending {
+    background-color: rgba(26, 63, 93, 0.2);
+    color: #5C7D99;
+  }
 } 

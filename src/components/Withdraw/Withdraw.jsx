@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from './WithdrawModal';
+import socketService, { SOCKET_EVENTS } from '../../services/socketService';
 import './Withdraw.scss';
 
 const Withdraw = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [selectedGame, setSelectedGame] = useState(null);
+  const [withdrawStatus, setWithdrawStatus] = useState(null);
+  const [freespins, setFreespins] = useState(200);
 
   const providers = [
     { id: 'egt', name: 'EGT', logo: '👁️' },
@@ -36,6 +39,34 @@ const Withdraw = () => {
     }
   ];
 
+  useEffect(() => {
+    // Subscribe to balance updates for freespins
+    const balanceUnsubscribe = socketService.subscribe(
+      SOCKET_EVENTS.BALANCE_UPDATE,
+      (balance) => {
+        setFreespins(balance.freespins);
+      }
+    );
+
+    // Subscribe to withdraw status updates
+    const withdrawUnsubscribe = socketService.subscribe(
+      SOCKET_EVENTS.WITHDRAW_STATUS,
+      (status) => {
+        setWithdrawStatus(status);
+        if (status.status === 'success') {
+          setIsModalOpen(false);
+          setSelectedGame(null);
+          setSelectedProvider(null);
+        }
+      }
+    );
+
+    return () => {
+      balanceUnsubscribe();
+      withdrawUnsubscribe();
+    };
+  }, []);
+
   const handleProviderSelect = (provider) => {
     setSelectedProvider(provider);
   };
@@ -46,8 +77,12 @@ const Withdraw = () => {
 
   const handleCashOut = () => {
     if (selectedGame) {
-      console.log('Cashing out game:', selectedGame);
-      setIsModalOpen(false);
+      // Emit withdraw request through socket
+      socketService.emit(SOCKET_EVENTS.WITHDRAW_REQUEST, {
+        gameId: selectedGame.id,
+        providerId: selectedProvider.id,
+        amount: freespins
+      });
     }
   };
 
@@ -57,7 +92,7 @@ const Withdraw = () => {
         <h2>Total amount of free spins</h2>
         <div className="withdraw-amount">
           <span className="amount-icon">🎰</span>
-          <span className="amount">200</span>
+          <span className="amount">{freespins}</span>
         </div>
       </div>
       <button 
@@ -77,6 +112,7 @@ const Withdraw = () => {
         onProviderSelect={handleProviderSelect}
         onGameSelect={handleGameSelect}
         onCashOut={handleCashOut}
+        withdrawStatus={withdrawStatus}
       />
     </div>
   );

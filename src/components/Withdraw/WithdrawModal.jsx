@@ -9,7 +9,8 @@ const WithdrawModal = ({
   selectedGame,
   onProviderSelect,
   onGameSelect,
-  onCashOut
+  onCashOut,
+  withdrawStatus
 }) => {
   if (!isOpen) return null;
 
@@ -20,12 +21,21 @@ const WithdrawModal = ({
         <div className="modal-content">
           <h2>Total amount of free spins</h2>
           
+          {withdrawStatus && (
+            <div className={`withdraw-status ${withdrawStatus.status}`}>
+              {withdrawStatus.status === 'success' 
+                ? '✅ Withdraw successful!'
+                : '⏳ Processing withdraw request...'}
+            </div>
+          )}
+          
           <div className="providers-section">
             {providers.map(provider => (
               <button
                 key={provider.id}
                 className={`provider-button ${selectedProvider?.id === provider.id ? 'selected' : ''}`}
                 onClick={() => onProviderSelect(provider)}
+                disabled={!!withdrawStatus}
               >
                 <span className="provider-logo">{provider.logo}</span>
                 <span className="provider-name">{provider.name}</span>
@@ -38,7 +48,7 @@ const WithdrawModal = ({
               <div
                 key={game.id}
                 className={`game-item ${selectedGame?.id === game.id ? 'selected' : ''}`}
-                onClick={() => onGameSelect(game)}
+                onClick={() => !withdrawStatus && onGameSelect(game)}
               >
                 <img src={game.image} alt={game.name} className="game-image" />
                 <div className="game-info">
@@ -49,7 +59,8 @@ const WithdrawModal = ({
                   <input 
                     type="checkbox" 
                     checked={selectedGame?.id === game.id}
-                    onChange={() => onGameSelect(game)}
+                    onChange={() => !withdrawStatus && onGameSelect(game)}
+                    disabled={!!withdrawStatus}
                   />
                 </div>
               </div>
@@ -64,9 +75,9 @@ const WithdrawModal = ({
             <button 
               className="cash-out-button"
               onClick={onCashOut}
-              disabled={!selectedGame}
+              disabled={!selectedGame || !!withdrawStatus}
             >
-              Cash Out
+              {withdrawStatus ? 'Processing...' : 'Cash Out'}
             </button>
           </div>
         </div>
