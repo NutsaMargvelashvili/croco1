@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useGlobal } from '../../context/GlobalContext';
-import { fetchLeaderboards, fetchLeaderboard } from '../../services/leaderboardService';
+import { fetchLeaderboards, fetchLeaderboard, fetchLeaderboardTimeline } from '../../services/leaderboardService';
+import Timeline from './Timeline';
 import './Leaderboard.scss';
 
-const LeaderboardTable = ({ leaderboard, players }) => {
+const LeaderboardTable = ({ leaderboard, players, timeline }) => {
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -16,6 +17,8 @@ const LeaderboardTable = ({ leaderboard, players }) => {
     <div className="leaderboard-container">
       <h2>{leaderboard.name}</h2>
       
+      {timeline && <Timeline days={timeline} />}
+
       <div className="leaderboard-info">
         {leaderboard.description && (
           <p className="leaderboard-description">{leaderboard.description}</p>
@@ -59,6 +62,7 @@ const Leaderboard = () => {
   const { globalConfig, setGlobalConfig, fetchEndpoint } = useGlobal();
   const [leaderboards, setLeaderboards] = useState([]);
   const [leaderboardData, setLeaderboardData] = useState({});
+  const [timelineData, setTimelineData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -77,18 +81,32 @@ const Leaderboard = () => {
         setLeaderboards(leaderboardsData);
 
         // Fetch data for each leaderboard
-        const promises = leaderboardsData.map(async (leaderboard) => {
+        const dataPromises = leaderboardsData.map(async (leaderboard) => {
           const data = await fetchLeaderboard(
             fetchEndpoint,
             promotionId,
             leaderboard.value.externalId.toString()
           );
+          console.log('Data:', data);
           return [leaderboard.value.externalId, data.players];
         });
 
-        const results = await Promise.all(promises);
-        const dataMap = Object.fromEntries(results);
-        setLeaderboardData(dataMap);
+        // Fetch timeline for each leaderboard
+        const timelinePromises = leaderboardsData.map(async (leaderboard) => {
+          const timeline = await fetchLeaderboardTimeline(
+            fetchEndpoint,
+            leaderboard.value.externalId.toString()
+          );
+          return [leaderboard.value.externalId, timeline];
+        });
+
+        const [dataResults, timelineResults] = await Promise.all([
+          Promise.all(dataPromises),
+          Promise.all(timelinePromises)
+        ]);
+
+        setLeaderboardData(Object.fromEntries(dataResults));
+        setTimelineData(Object.fromEntries(timelineResults));
       } catch (err) {
         setError(err.message);
         console.error('Error loading leaderboards:', err);
@@ -121,6 +139,7 @@ const Leaderboard = () => {
           key={leaderboard.value.externalId}
           leaderboard={leaderboard}
           players={leaderboardData[leaderboard.value.externalId] || []}
+          timeline={timelineData[leaderboard.value.externalId]}
         />
       ))}
     </div>
