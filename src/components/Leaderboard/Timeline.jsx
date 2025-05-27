@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Leaderboard.scss';
 
-const Timeline = ({ days, onPeriodChange }) => {
+const Timeline = ({ days, onTimelineChange }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const formatDate = (dateString) => {
@@ -15,8 +15,6 @@ const Timeline = ({ days, onPeriodChange }) => {
 
   const isCurrentPeriod = (period) => {
     const today = new Date('Tue May 28 2025 14:31:26 GMT+0400 (Georgia Standard Time)'); // TODO: change this
-    console.log(today, "today");
-    
     const startDate = new Date(period.startDate);
     const endDate = new Date(period.endDate);
     
@@ -28,21 +26,24 @@ const Timeline = ({ days, onPeriodChange }) => {
     return today >= startDate && today <= endDate;
   };
 
+  const handlePeriodChange = (index) => {
+    setCurrentIndex(index);
+    const period = days[index];
+    onTimelineChange?.(isCurrentPeriod(period));
+  };
+
   const handlePrevious = () => {
-    const newIndex = Math.max(0, currentIndex - 1);
-    setCurrentIndex(newIndex);
-    onPeriodChange?.(days[newIndex]);
+    handlePeriodChange(Math.max(0, currentIndex - 1));
   };
 
   const handleNext = () => {
-    const newIndex = Math.min(days.length - 1, currentIndex + 1);
-    setCurrentIndex(newIndex);
-    onPeriodChange?.(days[newIndex]);
+    handlePeriodChange(Math.min(days.length - 1, currentIndex + 1));
   };
 
   if (!days?.length) return null;
 
   const currentPeriod = days[currentIndex];
+  const isCurrent = isCurrentPeriod(currentPeriod);
 
   return (
     <div className="timeline">
@@ -62,7 +63,7 @@ const Timeline = ({ days, onPeriodChange }) => {
         </button>
 
         <div className="timeline-period">
-          <div className={`timeline-card ${isCurrentPeriod(currentPeriod) ? 'current' : ''}`}>
+          <div className={`timeline-card ${isCurrent ? 'current' : ''}`}>
             <div className="timeline-dates">
               <div className="timeline-date-group start">
                 <span className="timeline-label">Start</span>
@@ -91,10 +92,7 @@ const Timeline = ({ days, onPeriodChange }) => {
           <span 
             key={index} 
             className={`timeline-dot ${index === currentIndex ? 'active' : ''}`}
-            onClick={() => {
-              setCurrentIndex(index);
-              onPeriodChange?.(days[index]);
-            }}
+            onClick={() => handlePeriodChange(index)}
           />
         ))}
       </div>

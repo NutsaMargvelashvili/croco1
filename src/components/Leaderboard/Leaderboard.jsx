@@ -4,7 +4,7 @@ import { fetchLeaderboards, fetchLeaderboard, fetchCurrentLeaderboard, fetchLead
 import Timeline from './Timeline';
 import './Leaderboard.scss';
 
-const LeaderboardTable = ({ leaderboard, players, timeline }) => {
+const LeaderboardTable = ({ leaderboard, players, timeline, onTimelineChange }) => {
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -17,7 +17,7 @@ const LeaderboardTable = ({ leaderboard, players, timeline }) => {
     <div className="leaderboard-container">
       <h2>{leaderboard.name}</h2>
       
-      {timeline && <Timeline days={timeline} />}
+      {timeline && <Timeline days={timeline} onTimelineChange={onTimelineChange} />}
 
       <div className="leaderboard-info">
         {leaderboard.description && (
@@ -66,6 +66,26 @@ const Leaderboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Handle timeline change and fetch appropriate data
+  const handleTimelineChange = (leaderboard) => async (isCurrent) => {
+    try {
+      const { promotionId } = globalConfig;
+      const externalId = leaderboard.value.externalId.toString();
+
+      // Use appropriate fetch function based on whether it's current period
+      const data = isCurrent
+        ? await fetchCurrentLeaderboard(fetchEndpoint, promotionId, externalId)
+        : await fetchLeaderboard(fetchEndpoint, promotionId, externalId);
+
+      setLeaderboardData(prev => ({
+        ...prev,
+        [externalId]: data.players
+      }));
+    } catch (err) {
+      console.error('Error fetching leaderboard data:', err);
+    }
+  };
+
   // Fetch all leaderboards
   useEffect(() => {
     const loadLeaderboards = async () => {
@@ -87,7 +107,6 @@ const Leaderboard = () => {
             promotionId,
             leaderboard.value.externalId.toString()
           );
-          console.log('Data:', data);
           return [leaderboard.value.externalId, data.players];
         });
 
@@ -140,6 +159,7 @@ const Leaderboard = () => {
           leaderboard={leaderboard}
           players={leaderboardData[leaderboard.value.externalId] || []}
           timeline={timelineData[leaderboard.value.externalId]}
+          onTimelineChange={handleTimelineChange(leaderboard)}
         />
       ))}
     </div>
