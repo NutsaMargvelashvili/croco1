@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Leaderboard.scss';
 
 const Timeline = ({ days, onTimelineChange }) => {
@@ -16,6 +16,17 @@ const Timeline = ({ days, onTimelineChange }) => {
   const isCurrentPeriod = (period) => {
     return period.status === 1;
   };
+
+  // Find and set the current period on mount
+  useEffect(() => {
+    if (days?.length) {
+      const currentPeriodIndex = days.findIndex(isCurrentPeriod);
+      if (currentPeriodIndex !== -1) {
+        setCurrentIndex(currentPeriodIndex);
+        onTimelineChange?.(true);
+      }
+    }
+  }, [days]);
 
   const handlePeriodChange = (index) => {
     setCurrentIndex(index);

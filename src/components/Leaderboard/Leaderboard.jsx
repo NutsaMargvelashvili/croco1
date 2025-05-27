@@ -4,7 +4,7 @@ import { fetchLeaderboards, fetchLeaderboard, fetchCurrentLeaderboard, fetchLead
 import Timeline from './Timeline';
 import './Leaderboard.scss';
 
-const LeaderboardTable = ({ leaderboard, players, timeline, onTimelineChange }) => {
+const LeaderboardTable = ({ leaderboard, players, timeline, onTimelineChange, error }) => {
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -13,6 +13,8 @@ const LeaderboardTable = ({ leaderboard, players, timeline, onTimelineChange }) 
     });
   };
 
+  const hasValidPlayers = players && Array.isArray(players) && players.length;
+  console.log(players, "players");
   return (
     <div className="leaderboard-container">
       <h2>{leaderboard.name}</h2>
@@ -40,18 +42,29 @@ const LeaderboardTable = ({ leaderboard, players, timeline, onTimelineChange }) 
         </div>
 
         <div className="leaderboard-body">
-          {players.map((player, index) => (
-            <div key={player.rank} className="leaderboard-row">
-              <div className="column-place">
-                <span className={`rank rank-${player.rank}`}>{player.rank}</span>
-              </div>
-              <div className="column-player">{player.name}</div>
-              <div className="column-points">{player.points}</div>
-              <div className="column-prize">
-                {leaderboard.prizes[index]?.amount ? `${leaderboard.prizes[index].amount} ${leaderboard.prizes[index].coinId?.split('_')[1] || ''}` : '-'}
-              </div>
+          {error ? (
+            <div className="leaderboard-error-message">
+              No data available for this period
             </div>
-          ))}
+          ) : hasValidPlayers ? (
+            players
+              .map((player, index) => (
+                <div key={player.rank} className="leaderboard-row">
+                  <div className="column-place">
+                    <span className={`rank rank-${player.rank}`}>{player.rank}</span>
+                  </div>
+                  <div className="column-player">{player.name}</div>
+                  <div className="column-points">{player.points}</div>
+                  <div className="column-prize">
+                    {leaderboard.prizes[index]?.amount ? `${leaderboard.prizes[index].amount} ${leaderboard.prizes[index].coinId?.split('_')[1] || ''}` : '-'}
+                  </div>
+                </div>
+              ))
+          ) : (
+            <div className="leaderboard-empty-message">
+              No players have participated yet
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -65,6 +78,7 @@ const Leaderboard = () => {
   const [timelineData, setTimelineData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [leaderboardErrors, setLeaderboardErrors] = useState({});
 
   // Handle timeline change and fetch appropriate data
   const handleTimelineChange = (leaderboard) => async (isCurrent) => {
@@ -81,8 +95,23 @@ const Leaderboard = () => {
         ...prev,
         [externalId]: data.players
       }));
+      // Clear any previous errors for this leaderboard
+      setLeaderboardErrors(prev => ({
+        ...prev,
+        [externalId]: null
+      }));
     } catch (err) {
       console.error('Error fetching leaderboard data:', err);
+      // Set error for this specific leaderboard
+      setLeaderboardErrors(prev => ({
+        ...prev,
+        [externalId]: err.message
+      }));
+      // Clear any previous data for this leaderboard
+      setLeaderboardData(prev => ({
+        ...prev,
+        [externalId]: null
+      }));
     }
   };
 
@@ -150,6 +179,7 @@ const Leaderboard = () => {
   if (!leaderboards.length) {
     return <div className="leaderboard-empty">No leaderboards available</div>;
   }
+console.log(leaderboardData, "leaderboards");
 
   return (
     <div className="leaderboards">
@@ -157,7 +187,8 @@ const Leaderboard = () => {
         <LeaderboardTable
           key={leaderboard.value.externalId}
           leaderboard={leaderboard}
-          players={leaderboardData[leaderboard.value.externalId] || []}
+          players={leaderboardData[leaderboard.value.externalId]}
+          error={leaderboardErrors[leaderboard.value.externalId]}
           timeline={timelineData[leaderboard.value.externalId]}
           onTimelineChange={handleTimelineChange(leaderboard)}
         />

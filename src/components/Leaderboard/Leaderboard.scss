@@ -109,6 +109,22 @@
       color: #5C7D99;
     }
   }
+
+  &-empty-message,
+  &-error-message {
+    padding: $spacing-lg;
+    text-align: center;
+    font-size: $font-size-base;
+    background-color: #0A1F2D;
+  }
+
+  &-empty-message {
+    color: #5C7D99;
+  }
+
+  &-error-message {
+    color: #FF6B6B;
+  }
 }
 
 // Column styles
