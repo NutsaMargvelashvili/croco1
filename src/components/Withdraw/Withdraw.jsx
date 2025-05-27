@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGlobal } from '../../context/GlobalContext';
 import { fetchWithdrawOptions } from '../../services/withdrawService';
+import { fetchPlayerBalances } from '../../services/balanceService';
 import Modal from './WithdrawModal';
 import socketService, { SOCKET_EVENTS } from '../../services/socketService';
 import './Withdraw.scss';
@@ -11,61 +12,64 @@ const Withdraw = () => {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [selectedGame, setSelectedGame] = useState(null);
   const [withdrawStatus, setWithdrawStatus] = useState(null);
-  const [freespins, setFreespins] = useState(200);
+  const [freespins, setFreespins] = useState(0);
   const [withdrawOptions, setWithdrawOptions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Load initial withdraw options and balance
   useEffect(() => {
-    const loadWithdrawOptions = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
         if (!globalConfig.token) {
           throw new Error('Authentication token not found');
         }
-        const options = await fetchWithdrawOptions(fetchEndpoint, globalConfig.promotionId, globalConfig.token);
-        console.log(options, "options");
+
+        // Fetch both withdraw options and balance in parallel
+        const [options, balanceData] = await Promise.all([
+          fetchWithdrawOptions(fetchEndpoint, globalConfig.promotionId, globalConfig.token),
+          fetchPlayerBalances(fetchEndpoint, globalConfig.promotionId, globalConfig.token)
+        ]);
+
         setWithdrawOptions(options);
+
+        // Set freespins from balance data
+        const freespinsBalance = balanceData.balances.find(b => b.coinType === 2);
+        if (freespinsBalance) {
+          setFreespins(freespinsBalance.amount);
+        }
       } catch (err) {
         setError(err.message);
-        console.error('Error loading withdraw options:', err);
+        console.error('Error loading data:', err);
       } finally {
         setLoading(false);
       }
     };
 
     if (globalConfig.promotionId && globalConfig.token) {
-      loadWithdrawOptions();
+      loadData();
     }
   }, [globalConfig.promotionId, globalConfig.token, fetchEndpoint]);
 
-  // useEffect(() => {
-  //   // Subscribe to balance updates for freespins
-  //   const balanceUnsubscribe = socketService.subscribe(
-  //     SOCKET_EVENTS.BALANCE_UPDATE,
-  //     (balance) => {
-  //       setFreespins(balance.freespins);
-  //     }
-  //   );
+  useEffect(() => {
+    // Subscribe to withdraw status updates
+    const withdrawUnsubscribe = socketService.subscribe(
+      SOCKET_EVENTS.WITHDRAW_STATUS,
+      (status) => {
+        setWithdrawStatus(status);
+        if (status.status === 'succeeded') {
+          setIsModalOpen(false);
+          setSelectedGame(null);
+          setSelectedProvider(null);
+        }
+      }
+    );
 
-  //   // Subscribe to withdraw status updates
-  //   const withdrawUnsubscribe = socketService.subscribe(
-  //     SOCKET_EVENTS.WITHDRAW_STATUS,
-  //     (status) => {
-  //       setWithdrawStatus(status);
-  //       if (status.status === 'succeeded') {
-  //         setIsModalOpen(false);
-  //         setSelectedGame(null);
-  //         setSelectedProvider(null);
-  //       }
-  //     }
-  //   );
-
-  //   return () => {
-  //     balanceUnsubscribe();
-  //     withdrawUnsubscribe();
-  //   };
-  // }, []);
+    return () => {
+      withdrawUnsubscribe();
+    };
+  }, []);
 
   const handleProviderSelect = (provider) => {
     setSelectedProvider(provider);
@@ -78,12 +82,12 @@ const Withdraw = () => {
 
   const handleCashOut = () => {
     if (selectedGame) {
-      // // Emit withdraw request through socket
-      // socketService.emit(SOCKET_EVENTS.WITHDRAW_REQUEST, {
-      //   gameId: selectedGame.id,
-      //   providerId: selectedProvider.id,
-      //   amount: freespins
-      // });
+      // Emit withdraw request through socket
+      socketService.emit(SOCKET_EVENTS.WITHDRAW_REQUEST, {
+        gameId: selectedGame.id,
+        providerId: selectedProvider.id,
+        amount: freespins
+      });
       setWithdrawStatus({ status: 'pending' });
     }
   };
@@ -127,6 +131,7 @@ const Withdraw = () => {
         onGameSelect={handleGameSelect}
         onCashOut={handleCashOut}
         withdrawStatus={withdrawStatus}
+        freespins={freespins}
       />
     </div>
   );

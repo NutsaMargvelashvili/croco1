@@ -10,7 +10,8 @@ const WithdrawModal = ({
   onProviderSelect,
   onGameSelect,
   onCashOut,
-  withdrawStatus
+  withdrawStatus,
+  freespins
 }) => {
   if (!isOpen) return null;
 
@@ -21,14 +22,14 @@ const WithdrawModal = ({
         <div className="modal-content">
           <h2>Total amount of free spins</h2>
           
-          {/* {withdrawStatus && (
+          {withdrawStatus && (
             <div className={`withdraw-status ${withdrawStatus.status}`}>
               {withdrawStatus.status === 'succeeded' 
                 ? '✅ Withdraw successful!'
                 : '⏳ Processing withdraw request...'}
             </div>
           )}
-           */}
+          
           <div className="providers-section">
             {providers.map(provider => (
               <button
@@ -71,12 +72,13 @@ const WithdrawModal = ({
           <div className="modal-footer">
             <div className="total-amount">
               <span className="amount-icon">🎰</span>
-              <span className="amount">200</span>
+              <span className="amount">{freespins}</span>
+              <span className="amount-label">Free Spins Available</span>
             </div>
             <button 
               className="cash-out-button"
               onClick={onCashOut}
-              disabled={!selectedGame || !!withdrawStatus}
+              disabled={!selectedGame || !!withdrawStatus || freespins <= 0}
             >
               {withdrawStatus ? 'Processing...' : 'Cash Out'}
             </button>
