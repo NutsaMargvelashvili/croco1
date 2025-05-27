@@ -14,16 +14,7 @@ const Timeline = ({ days, onTimelineChange }) => {
   };
 
   const isCurrentPeriod = (period) => {
-    const today = new Date('Tue May 28 2025 14:31:26 GMT+0400 (Georgia Standard Time)'); // TODO: change this
-    const startDate = new Date(period.startDate);
-    const endDate = new Date(period.endDate);
-    
-    // Set times to midnight for date-only comparison
-    today.setHours(0, 0, 0, 0);
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(0, 0, 0, 0);
-    
-    return today >= startDate && today <= endDate;
+    return period.status === 1;
   };
 
   const handlePeriodChange = (index) => {

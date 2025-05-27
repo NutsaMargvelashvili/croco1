@@ -143,13 +143,13 @@ export const fetchCurrentLeaderboard = async (fetchEndpoint, promotionId, extern
     };
 
     // Log the query parameters before making the request
-    console.log('Query parameters:', {
-      ExternalId: externalId
-    });
+    // console.log('Query parameters:', {
+    //   ExternalId: externalId
+    // });
 
     const response = await fetchEndpoint(endpointInfo, {
       query: {
-        ExternalId: 3
+        ExternalId: externalId
       }
     });
 
