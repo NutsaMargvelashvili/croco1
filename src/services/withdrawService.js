@@ -119,7 +119,7 @@ export const fetchWithdrawOptions = async (fetchEndpoint, promotionId, token) =>
       query: { promotionId }
     });
 
-    if (!response.success) {
+    if (!response.succeeded) {
       throw new Error(response.errors?.[0]?.message || 'Failed to fetch withdraw options');
     }
 

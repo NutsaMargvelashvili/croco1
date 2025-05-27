@@ -52,7 +52,7 @@ const Withdraw = () => {
       SOCKET_EVENTS.WITHDRAW_STATUS,
       (status) => {
         setWithdrawStatus(status);
-        if (status.status === 'success') {
+        if (status.status === 'succeeded') {
           setIsModalOpen(false);
           setSelectedGame(null);
           setSelectedProvider(null);
