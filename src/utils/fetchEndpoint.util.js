@@ -15,11 +15,15 @@ export const fetchEndpoint = async (promotion, options) => {
 
     console.log('Making request to:', url);
 
+    // Merge default headers with promotion headers
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(promotion.headers || {})
+    };
+
     const response = await fetch(url, {
       method: promotion.requestMethod,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers
     });
     
     if (!response.ok) {

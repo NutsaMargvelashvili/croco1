@@ -149,7 +149,7 @@ export const fetchCurrentLeaderboard = async (fetchEndpoint, promotionId, extern
 
     const response = await fetchEndpoint(endpointInfo, {
       query: {
-        ExternalId: 254
+        ExternalId: 3
       }
     });
 
@@ -200,13 +200,13 @@ export const fetchLeaderboard = async (fetchEndpoint, promotionId, externalId) =
     };
 
     // Log the query parameters before making the request
-    console.log('Query parameters:', {
-      LeaderboardRecordId: 278
-    });
+    // console.log('Query parameters:', {
+    //   LeaderboardRecordId: 0
+    // });
 
     const response = await fetchEndpoint(endpointInfo, {
       query: {
-        LeaderboardRecordId: 278
+        LeaderboardRecordId: 0
       }
     });
 
@@ -257,7 +257,7 @@ export const fetchLeaderboardTimeline = async (fetchEndpoint, externalId) => {
     };
 
     const response = await fetchEndpoint(endpointInfo, {
-      query: { ExternalId: 254 }
+      query: { ExternalId: externalId }
     });
 
     if (!response) {

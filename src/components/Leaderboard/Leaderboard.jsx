@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGlobal } from '../../context/GlobalContext';
-import { fetchLeaderboards, fetchLeaderboard, fetchLeaderboardTimeline } from '../../services/leaderboardService';
+import { fetchLeaderboards, fetchLeaderboard, fetchCurrentLeaderboard, fetchLeaderboardTimeline } from '../../services/leaderboardService';
 import Timeline from './Timeline';
 import './Leaderboard.scss';
 
@@ -82,7 +82,7 @@ const Leaderboard = () => {
 
         // Fetch data for each leaderboard
         const dataPromises = leaderboardsData.map(async (leaderboard) => {
-          const data = await fetchLeaderboard(
+          const data = await fetchCurrentLeaderboard(
             fetchEndpoint,
             promotionId,
             leaderboard.value.externalId.toString()

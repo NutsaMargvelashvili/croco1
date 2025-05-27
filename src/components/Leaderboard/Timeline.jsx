@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Leaderboard.scss';
 
-const Timeline = ({ days }) => {
+const Timeline = ({ days, onPeriodChange }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const formatDate = (dateString) => {
@@ -13,12 +13,31 @@ const Timeline = ({ days }) => {
     });
   };
 
+  const isCurrentPeriod = (period) => {
+    const today = new Date('Tue May 28 2025 14:31:26 GMT+0400 (Georgia Standard Time)'); // TODO: change this
+    console.log(today, "today");
+    
+    const startDate = new Date(period.startDate);
+    const endDate = new Date(period.endDate);
+    
+    // Set times to midnight for date-only comparison
+    today.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    
+    return today >= startDate && today <= endDate;
+  };
+
   const handlePrevious = () => {
-    setCurrentIndex(prev => Math.max(0, prev - 1));
+    const newIndex = Math.max(0, currentIndex - 1);
+    setCurrentIndex(newIndex);
+    onPeriodChange?.(days[newIndex]);
   };
 
   const handleNext = () => {
-    setCurrentIndex(prev => Math.min(days.length - 1, prev + 1));
+    const newIndex = Math.min(days.length - 1, currentIndex + 1);
+    setCurrentIndex(newIndex);
+    onPeriodChange?.(days[newIndex]);
   };
 
   if (!days?.length) return null;
@@ -43,7 +62,7 @@ const Timeline = ({ days }) => {
         </button>
 
         <div className="timeline-period">
-          <div className="timeline-card current">
+          <div className={`timeline-card ${isCurrentPeriod(currentPeriod) ? 'current' : ''}`}>
             <div className="timeline-dates">
               <div className="timeline-date-group start">
                 <span className="timeline-label">Start</span>
@@ -72,7 +91,10 @@ const Timeline = ({ days }) => {
           <span 
             key={index} 
             className={`timeline-dot ${index === currentIndex ? 'active' : ''}`}
-            onClick={() => setCurrentIndex(index)}
+            onClick={() => {
+              setCurrentIndex(index);
+              onPeriodChange?.(days[index]);
+            }}
           />
         ))}
       </div>

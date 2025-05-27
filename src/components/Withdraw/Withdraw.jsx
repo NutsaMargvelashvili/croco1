@@ -1,43 +1,42 @@
 import { useState, useEffect } from 'react';
+import { useGlobal } from '../../context/GlobalContext';
+import { fetchWithdrawOptions } from '../../services/withdrawService';
 import Modal from './WithdrawModal';
 import socketService, { SOCKET_EVENTS } from '../../services/socketService';
 import './Withdraw.scss';
 
 const Withdraw = () => {
+  const { globalConfig, fetchEndpoint } = useGlobal();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [selectedGame, setSelectedGame] = useState(null);
   const [withdrawStatus, setWithdrawStatus] = useState(null);
   const [freespins, setFreespins] = useState(200);
+  const [withdrawOptions, setWithdrawOptions] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const providers = [
-    { id: 'egt', name: 'EGT', logo: '👁️' },
-    { id: 'egt_digital', name: 'EGT Digital', logo: '🎮' }
-  ];
+  useEffect(() => {
+    const loadWithdrawOptions = async () => {
+      try {
+        setLoading(true);
+        if (!globalConfig.token) {
+          throw new Error('Authentication token not found');
+        }
+        const options = await fetchWithdrawOptions(fetchEndpoint, globalConfig.promotionId, globalConfig.token);
+        setWithdrawOptions(options);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error loading withdraw options:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const games = [
-    {
-      id: 1,
-      name: 'Sweet Bonanza',
-      provider: 'egt',
-      image: 'https://placehold.co/50',
-      bet: '0.2₾'
-    },
-    {
-      id: 2,
-      name: 'Sweet Bonanza',
-      provider: 'egt',
-      image: 'https://placehold.co/50',
-      bet: '0.2₾'
-    },
-    {
-      id: 3,
-      name: 'Sweet Bonanza',
-      provider: 'egt',
-      image: 'https://placehold.co/50',
-      bet: '0.2₾'
+    if (globalConfig.promotionId && globalConfig.token) {
+      loadWithdrawOptions();
     }
-  ];
+  }, [globalConfig.promotionId, globalConfig.token, fetchEndpoint]);
 
   useEffect(() => {
     // Subscribe to balance updates for freespins
@@ -69,6 +68,7 @@ const Withdraw = () => {
 
   const handleProviderSelect = (provider) => {
     setSelectedProvider(provider);
+    setSelectedGame(null);
   };
 
   const handleGameSelect = (game) => {
@@ -83,8 +83,20 @@ const Withdraw = () => {
         providerId: selectedProvider.id,
         amount: freespins
       });
+      setWithdrawStatus({ status: 'pending' });
     }
   };
+
+  if (loading) {
+    return <div className="withdraw-loading">Loading withdraw options...</div>;
+  }
+
+  if (error) {
+    return <div className="withdraw-error">Error: {error}</div>;
+  }
+
+  const providers = withdrawOptions?.providers || [];
+  const games = withdrawOptions?.games || [];
 
   return (
     <div className="withdraw">
@@ -98,6 +110,7 @@ const Withdraw = () => {
       <button 
         className="withdraw-button"
         onClick={() => setIsModalOpen(true)}
+        disabled={!withdrawOptions || freespins <= 0}
       >
         Cash Out
       </button>
