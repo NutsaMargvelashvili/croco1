@@ -59,7 +59,7 @@ export const GlobalProvider = ({ children }) => {
       }
 
       const token = urlParams.get("token") ||
-        "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJQbGF5ZXJJZCI6IjEiLCJVc2VyTmFtZSI6ImFjaGFuZ2VsaWEiLCJTZWdtZW50SWRzIjoiZGVmYXVsdCIsImV4cCI6MjM0MDY1Mjk0MywiaXNzIjoiSFVCIiwiYXVkIjoiSFVCLUFVRElFTkNFIn0.usZBHjkuF74VbvCBoiVza0yFll0uSntmvC8_UKNd2kE7Ez5MmZlJoJHsCkjdF2rHD0kh8F1iyiFIIjVi1zsx-Q";
+        "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJQbGF5ZXJJZCI6IjgiLCJVc2VyTmFtZSI6IlFBVGVzdCIsIlNlZ21lbnRJZHMiOiJkZWZhdWx0LGRlZmF1bHQiLCJleHAiOjIzNDgzNDYwNTYsImlzcyI6IkhVQiIsImF1ZCI6IkhVQi1BVURJRU5DRSJ9.PYKHCRrAX7X6TIajSVH9i_AFnOlGa-tdBU0i-T0WysgorJIUYs9knbe6rrlC7Lv6R5efGXAPelUXzbsuVYfX9g";
 
       const externalId = urlParams.get("externalId") || 
                         urlParams.get("externalid") || 

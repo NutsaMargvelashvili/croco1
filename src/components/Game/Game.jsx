@@ -47,7 +47,9 @@ const Game = () => {
     if (currentGame?.url && iframeRef.current) {
       try {
         let gameUrl = currentGame.url;
+        console.log(gameUrl, "game url");
         if (globalConfig.token) {
+            console.log(globalConfig.token, "token");
           gameUrl += gameUrl.includes('token') ? 
             globalConfig.token : 
             `&token=${globalConfig.token}`;
