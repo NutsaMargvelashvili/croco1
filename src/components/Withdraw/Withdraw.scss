@@ -186,12 +186,16 @@
     flex-direction: column;
     gap: 4px;
 
-    .game-name {
+    .game-title {
       color: white;
       font-size: 14px;
     }
+    .game-description {
+      color: #0A5C2D;
+      font-size: 14px;
+    }
 
-    .game-bet {
+    .game-value {
       color: #5C7D99;
       font-size: 12px;
     }

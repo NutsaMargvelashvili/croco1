@@ -21,14 +21,14 @@ const WithdrawModal = ({
         <div className="modal-content">
           <h2>Total amount of free spins</h2>
           
-          {withdrawStatus && (
+          {/* {withdrawStatus && (
             <div className={`withdraw-status ${withdrawStatus.status}`}>
-              {withdrawStatus.status === 'success' 
+              {withdrawStatus.status === 'succeeded' 
                 ? '✅ Withdraw successful!'
                 : '⏳ Processing withdraw request...'}
             </div>
           )}
-          
+           */}
           <div className="providers-section">
             {providers.map(provider => (
               <button
@@ -50,10 +50,11 @@ const WithdrawModal = ({
                 className={`game-item ${selectedGame?.id === game.id ? 'selected' : ''}`}
                 onClick={() => !withdrawStatus && onGameSelect(game)}
               >
-                <img src={game.image} alt={game.name} className="game-image" />
+                <img src={game.imageUrl} alt={game.description} className="game-image" />
                 <div className="game-info">
-                  <span className="game-name">{game.name}</span>
-                  <span className="game-bet">{game.bet}</span>
+                  <span className="game-title">{game.title}</span>
+                  <span className="game-description">{game.description}</span>
+                  <span className="game-value">{game.value}</span>
                 </div>
                 <div className="game-select">
                   <input 

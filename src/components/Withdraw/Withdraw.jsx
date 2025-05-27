@@ -24,6 +24,7 @@ const Withdraw = () => {
           throw new Error('Authentication token not found');
         }
         const options = await fetchWithdrawOptions(fetchEndpoint, globalConfig.promotionId, globalConfig.token);
+        console.log(options, "options");
         setWithdrawOptions(options);
       } catch (err) {
         setError(err.message);
@@ -38,33 +39,33 @@ const Withdraw = () => {
     }
   }, [globalConfig.promotionId, globalConfig.token, fetchEndpoint]);
 
-  useEffect(() => {
-    // Subscribe to balance updates for freespins
-    const balanceUnsubscribe = socketService.subscribe(
-      SOCKET_EVENTS.BALANCE_UPDATE,
-      (balance) => {
-        setFreespins(balance.freespins);
-      }
-    );
+  // useEffect(() => {
+  //   // Subscribe to balance updates for freespins
+  //   const balanceUnsubscribe = socketService.subscribe(
+  //     SOCKET_EVENTS.BALANCE_UPDATE,
+  //     (balance) => {
+  //       setFreespins(balance.freespins);
+  //     }
+  //   );
 
-    // Subscribe to withdraw status updates
-    const withdrawUnsubscribe = socketService.subscribe(
-      SOCKET_EVENTS.WITHDRAW_STATUS,
-      (status) => {
-        setWithdrawStatus(status);
-        if (status.status === 'succeeded') {
-          setIsModalOpen(false);
-          setSelectedGame(null);
-          setSelectedProvider(null);
-        }
-      }
-    );
+  //   // Subscribe to withdraw status updates
+  //   const withdrawUnsubscribe = socketService.subscribe(
+  //     SOCKET_EVENTS.WITHDRAW_STATUS,
+  //     (status) => {
+  //       setWithdrawStatus(status);
+  //       if (status.status === 'succeeded') {
+  //         setIsModalOpen(false);
+  //         setSelectedGame(null);
+  //         setSelectedProvider(null);
+  //       }
+  //     }
+  //   );
 
-    return () => {
-      balanceUnsubscribe();
-      withdrawUnsubscribe();
-    };
-  }, []);
+  //   return () => {
+  //     balanceUnsubscribe();
+  //     withdrawUnsubscribe();
+  //   };
+  // }, []);
 
   const handleProviderSelect = (provider) => {
     setSelectedProvider(provider);
@@ -77,12 +78,12 @@ const Withdraw = () => {
 
   const handleCashOut = () => {
     if (selectedGame) {
-      // Emit withdraw request through socket
-      socketService.emit(SOCKET_EVENTS.WITHDRAW_REQUEST, {
-        gameId: selectedGame.id,
-        providerId: selectedProvider.id,
-        amount: freespins
-      });
+      // // Emit withdraw request through socket
+      // socketService.emit(SOCKET_EVENTS.WITHDRAW_REQUEST, {
+      //   gameId: selectedGame.id,
+      //   providerId: selectedProvider.id,
+      //   amount: freespins
+      // });
       setWithdrawStatus({ status: 'pending' });
     }
   };
@@ -95,8 +96,8 @@ const Withdraw = () => {
     return <div className="withdraw-error">Error: {error}</div>;
   }
 
-  const providers = withdrawOptions?.providers || [];
-  const games = withdrawOptions?.games || [];
+  const providers = withdrawOptions?.withdrawOptionGroups || [];
+  const games = withdrawOptions?.withdrawOptions || [];
 
   return (
     <div className="withdraw">

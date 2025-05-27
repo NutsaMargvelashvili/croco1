@@ -1,34 +1,94 @@
 import { useState, useEffect } from 'react';
+import { useGlobal } from '../../context/GlobalContext';
+import { fetchPlayerBalances } from '../../services/balanceService';
 import socketService, { SOCKET_EVENTS } from '../../services/socketService';
 import './Balance.scss';
 
 const Balance = () => {
+  const { globalConfig, fetchEndpoint } = useGlobal();
   const [balance, setBalance] = useState({
-    freespins: 1000,
-    crystals: 100,
-    coinIn: 3
+    freespins: 0,
+    crystals: 0,
+    coinIn: 0
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Connect to socket when component mounts
-    socketService.connect();
+    const loadBalances = async () => {
+      try {
+        setLoading(true);
+        if (!globalConfig.token) {
+          throw new Error('Authentication token not found');
+        }
+        const balanceData = await fetchPlayerBalances(fetchEndpoint, globalConfig.promotionId, globalConfig.token);
+        
+        // Transform balance data into our format
+        const transformedBalance = {
+            coinIn: {amount: 0, name: ''},
+            freespins: {amount: 0, name: ''},
+            promoCoin: {amount: 0, name: ''},
+            assetCoin: {amount: 0, name: ''},
+        };
 
-    // Subscribe to balance updates
-    const unsubscribe = socketService.subscribe(
-      SOCKET_EVENTS.BALANCE_UPDATE,
-      (newBalance) => {
-        setBalance(newBalance);
+        balanceData.balances.forEach(balance => {
+          switch (balance.coinType) {
+            case 1: // Coin-in 1
+              transformedBalance.coinIn.amount = balance.amount;
+              transformedBalance.coinIn.name = balance.coin;
+              break;
+            case 2: // Freespins (withdrawal) 1
+              transformedBalance.freespins.amount = balance.amount;
+              transformedBalance.freespins.name = balance.coin;
+              break;
+            case 3: // promo coin (only in promotion)
+              transformedBalance.promoCoin.amount = balance.amount;
+              transformedBalance.promoCoin.name = balance.coin;
+              break;
+            case 4: // asset coin (tangible)
+              transformedBalance.assetCoin.amount = balance.amount;
+              transformedBalance.assetCoin.name = balance.coin;
+              break;
+            default:
+              break;
+          }
+        });
+
+        setBalance(transformedBalance);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error loading balances:', err);
+      } finally {
+        setLoading(false);
       }
-    );
-
-    // Cleanup on unmount
-    return () => {
-      unsubscribe();
-      socketService.disconnect();
     };
-  }, []);
+
+    if (globalConfig.promotionId && globalConfig.token) {
+      loadBalances();
+    }
+  }, [globalConfig.promotionId, globalConfig.token, fetchEndpoint]);
+
+//   useEffect(() => {
+//     // Connect to socket when component mounts
+//     socketService.connect();
+
+//     // Subscribe to balance updates
+//     const unsubscribe = socketService.subscribe(
+//       SOCKET_EVENTS.BALANCE_UPDATE,
+//       (newBalance) => {
+//         setBalance(prevBalance => ({
+//           ...prevBalance,
+//           ...newBalance
+//         }));
+//       }
+//     );
+
+//     // Cleanup on unmount
+//     return () => {
+//       unsubscribe();
+//       socketService.disconnect();
+//     };
+//   }, []);
 
   if (loading) {
     return <div className="balance-loading">Loading balance...</div>;
@@ -45,16 +105,20 @@ const Balance = () => {
       </div>
       <div className="balance-content">
         <div className="balance-amount">
-          <span className="amount">{balance.freespins}</span>
-          <span className="currency">Freespins</span>
+          <span className="amount">{balance.coinIn.amount}</span>
+          <span className="currency">{balance.coinIn.name}</span>
         </div>
         <div className="balance-amount">
-          <span className="amount">{balance.crystals}</span>
-          <span className="currency">Crystals</span>
+          <span className="amount">{balance.freespins.amount}</span>
+          <span className="currency">{balance.freespins.name}</span>
         </div>
         <div className="balance-amount">
-          <span className="amount">{balance.coinIn}</span>
-          <span className="currency">Coin-in</span>
+          <span className="amount">{balance.promoCoin.amount}</span>
+          <span className="currency">{balance.promoCoin.name}</span>
+        </div>
+        <div className="balance-amount">
+          <span className="amount">{balance.assetCoin.amount}</span>
+          <span className="currency">{balance.assetCoin.name}</span>
         </div>
       </div>
     </div>
