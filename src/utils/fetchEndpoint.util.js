@@ -21,13 +21,22 @@ export const fetchEndpoint = async (promotion, options) => {
       ...(promotion.headers || {})
     };
 
-    const response = await fetch(url, {
+    // Prepare fetch options
+    const fetchOptions = {
       method: promotion.requestMethod,
       headers
-    });
+    };
+
+    // Add body for POST requests
+    if (promotion.requestMethod === 'POST' && options.body) {
+      fetchOptions.body = typeof options.body === 'string' ? options.body : JSON.stringify(options.body);
+    }
+
+    const response = await fetch(url, fetchOptions);
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(JSON.stringify(errorData));
     }
     
     return await response.json();

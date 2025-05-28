@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGlobal } from '../../context/GlobalContext';
-import { fetchWithdrawOptions } from '../../services/withdrawService';
+import { fetchWithdrawOptions, fetchFreespinValue, withdrawBalance } from '../../services/withdrawService';
 import { fetchPlayerBalances } from '../../services/balanceService';
 import Modal from './WithdrawModal';
 import socketService, { SOCKET_EVENTS } from '../../services/socketService';
@@ -13,6 +13,7 @@ const Withdraw = () => {
   const [selectedGame, setSelectedGame] = useState(null);
   const [withdrawStatus, setWithdrawStatus] = useState(null);
   const [freespins, setFreespins] = useState(0);
+  const [freespinValue, setFreespinValue] = useState(1);
   const [withdrawOptions, setWithdrawOptions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,13 +27,15 @@ const Withdraw = () => {
           throw new Error('Authentication token not found');
         }
 
-        // Fetch both withdraw options and balance in parallel
-        const [options, balanceData] = await Promise.all([
+        // Fetch withdraw options, balance, and freespin value in parallel
+        const [options, balanceData, value] = await Promise.all([
           fetchWithdrawOptions(fetchEndpoint, globalConfig.promotionId, globalConfig.token),
-          fetchPlayerBalances(fetchEndpoint, globalConfig.promotionId, globalConfig.token)
+          fetchPlayerBalances(fetchEndpoint, globalConfig.promotionId, globalConfig.token),
+          fetchFreespinValue(fetchEndpoint, globalConfig.promotionId)
         ]);
-
+        console.log(value, "vvvvalue");
         setWithdrawOptions(options);
+        setFreespinValue(value);
 
         // Set freespins from balance data
         const freespinsBalance = balanceData.balances.find(b => b.coinType === 2);
@@ -80,15 +83,34 @@ const Withdraw = () => {
     setSelectedGame(game);
   };
 
-  const handleCashOut = () => {
+  const handleCashOut = async () => {
     if (selectedGame) {
-      // Emit withdraw request through socket
-      socketService.emit(SOCKET_EVENTS.WITHDRAW_REQUEST, {
-        gameId: selectedGame.id,
-        providerId: selectedProvider.id,
-        amount: freespins
-      });
-      setWithdrawStatus({ status: 'pending' });
+      try {
+        setWithdrawStatus({ status: 'pending' });
+        
+        // Call the withdraw balance API
+        await withdrawBalance(
+          fetchEndpoint,
+          globalConfig.promotionId,
+          selectedGame.id,
+          globalConfig.token
+        );
+
+        // On success, update the status
+        setWithdrawStatus({ status: 'succeeded' });
+        
+        // Close modal and reset selection after a delay
+        setTimeout(() => {
+          setIsModalOpen(false);
+          setSelectedGame(null);
+          setSelectedProvider(null);
+          setWithdrawStatus(null);
+        }, 2000);
+
+      } catch (error) {
+        console.error('Error withdrawing balance:', error);
+        setWithdrawStatus({ status: 'failed', error: error.message });
+      }
     }
   };
 
@@ -132,6 +154,7 @@ const Withdraw = () => {
         onCashOut={handleCashOut}
         withdrawStatus={withdrawStatus}
         freespins={freespins}
+        freespinValue={freespinValue}
       />
     </div>
   );

@@ -133,3 +133,42 @@ export const fetchWithdrawOptions = async (fetchEndpoint, promotionId, token) =>
     throw error;
   }
 }; 
+
+export const fetchFreespinValue = async (fetchEndpoint, promotionId) => {
+  const promotion = {
+    endpoint: "http://192.168.88.201:5003/api/Builder/GetPromotionForBuilder",
+    requestMethod: "GET",
+    schemaType: {},
+    endpointType: "DT",
+  };
+
+  const response = await fetchEndpoint(promotion, {
+    query: { id: promotionId }
+  });
+
+  return response.data?.promotionCoins.find(coin => coin.coinType === 2)?.value || 0;
+};
+
+export const withdrawBalance = async (fetchEndpoint, promotionId, withdrawOptionId, token) => {
+  const promotion = {
+    endpoint: "http://192.168.88.201:5002/Hub/WithdrawBalance",
+    requestMethod: "POST",
+    schemaType: {},
+    endpointType: "RT",
+    headers: {
+      'accept': 'text/plain',
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  const response = await fetchEndpoint(promotion, {
+    body: {
+      promotionId: Number(promotionId),
+      withdrawOptionId: Number(withdrawOptionId)
+    }
+  });
+
+  return response;
+};
+  
