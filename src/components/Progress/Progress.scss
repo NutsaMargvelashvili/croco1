@@ -13,6 +13,7 @@ $progress-coin-color: #ffd700;
     padding: $spacing-lg;
     width: 100%;
     max-width: $breakpoint-desktop;
+
   }
 
   &-track {
@@ -21,9 +22,13 @@ $progress-coin-color: #ffd700;
     background: $progress-track-bg;
     border-radius: $border-radius-md;
     overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   &-bar {
+    // width: 100% !important;
     position: absolute;
     left: 0;
     top: 0;
@@ -34,10 +39,10 @@ $progress-coin-color: #ffd700;
   }
 
   &-milestone {
-    position: absolute;
+    // position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width:20%;
     height: 100%;
     pointer-events: none;
 
@@ -75,7 +80,7 @@ $progress-coin-color: #ffd700;
 
   &-current {
     position: absolute;
-    left: $spacing-md;
+    // left: $spacing-md;
     top: 50%;
     transform: translateY(-50%);
     background: $primary-color;

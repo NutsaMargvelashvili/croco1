@@ -204,7 +204,8 @@ export const fetchPlayerAggregationCurrentPoints = async (fetchEndpoint, configu
       message: error.message,
       stack: error.stack
     });
-    throw error;
+    return 0;
+    // throw error;
   }
 };
 

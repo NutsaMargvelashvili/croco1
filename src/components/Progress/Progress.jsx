@@ -81,29 +81,32 @@ const Progress = () => {
           className="progress-bar" 
           style={{ width: `${progressPercentage}%` }}
         />
-        <div className="progress-current">
-          {currentPoints}
-        </div>
+
         
         {stepsInfo.map((step, index) => {
           const position = (step.step / maxPoints) * 100;
           return (
             <div key={index} className="progress-milestone">
+              {index === currentPoints && (
+                <div className="progress-current">
+                  {currentPoints}
+                </div>
+              )}
               <div 
                 className="progress-milestone-label"
-                style={{ left: `${position}%` }}
+                // style={{ left: `${position}%` }}
               >
                 {step.step}
               </div>
               <div 
                 className="progress-milestone-marker"
-                style={{ left: `${position}%` }}
+                // style={{ left: `${position}%` }}
               >
                 🪙
               </div>
               <div 
                 className="progress-bonus-label"
-                style={{ left: `${position}%` }}
+                // style={{ left: `${position}%` }}
               >
                 +{step.point}
               </div>
