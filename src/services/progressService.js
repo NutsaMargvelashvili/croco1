@@ -85,46 +85,46 @@ const PLAYER_POINTS_SCHEMA = {
   }
 };
 
-export const fetchAggregationId = async (fetchEndpoint, promotionId) => {
-  try {
-    console.log('Fetching aggregation ID for promotion:', promotionId);
+// export const fetchAggregationId = async (fetchEndpoint, promotionId) => {
+//   try {
+//     console.log('Fetching aggregation ID for promotion:', promotionId);
     
-    const promotion = {
-      endpoint: "http://192.168.88.201:5003/api/Builder/GetPromotionForBuilder",
-      requestMethod: "GET",
-      schemaType: {},
-      endpointType: "DT",
-      schema: JSON.stringify(PROMOTION_SCHEMA)
-    };
+//     const promotion = {
+//       endpoint: "http://192.168.88.201:5003/api/Aggregation/GetAggregationForBuilderById",
+//       requestMethod: "GET",
+//       schemaType: {},
+//       endpointType: "DT",
+//       schema: JSON.stringify(PROMOTION_SCHEMA)
+//     };
 
-    const response = await fetchEndpoint(promotion, {
-      query: { id: promotionId }
-    });
+//     const response = await fetchEndpoint(promotion, {
+//       query: { promotionId: promotionId }
+//     });
 
-    console.log('API response:', response);
+//     console.log('იდდდდდდდდდდდ:', response);
 
-    if (response.data?.promotionCoins) {
-      // Find the coin with coinType 1
-      const coin = response.data.promotionCoins.find(coin => coin.coinType === 1);
+//     if (response.data?.promotionCoins) {
+//       // Find the coin with coinType 1
+//       const coin = response.data.promotionCoins.find(coin => coin.coinType === 1);
       
-      if (coin?.aggregationConfigurations?.[0]?.id) {
-        const aggregationId = coin.aggregationConfigurations[0].id;
-        console.log('Found aggregation ID:', aggregationId);
-        return aggregationId;
-      }
-    }
+//       if (coin?.aggregationConfigurations?.[0]?.id) {
+//         const aggregationId = coin.aggregationConfigurations[0].id;
+//         console.log('Found aggregation ID:', aggregationId);
+//         return aggregationId;
+//       }
+//     }
 
-    console.log('No aggregation ID found in response');
-    throw new Error('Aggregation ID not found in response');
-  } catch (error) {
-    console.error('Error in fetchAggregationId:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack
-    });
-    throw error;
-  }
-};
+//     console.log('No aggregation ID found in response');
+//     throw new Error('Aggregation ID not found in response');
+//   } catch (error) {
+//     console.error('Error in fetchAggregationId:', error);
+//     console.error('Error details:', {
+//       message: error.message,
+//       stack: error.stack
+//     });
+//     throw error;
+//   }
+// };
 
 export const fetchAggregation = async (fetchEndpoint, builderId) => {
   try {
@@ -187,7 +187,7 @@ export const fetchPlayerAggregationCurrentPoints = async (fetchEndpoint, configu
     });
 
     const response = await fetchEndpoint(playerPoints, {
-      query: { configurationId }
+      query: { configurationId: configurationId }
     });
 
     console.log('API response:', response);

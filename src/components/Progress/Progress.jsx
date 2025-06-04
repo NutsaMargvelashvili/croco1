@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useGlobal } from '../../context/GlobalContext';
 import { 
   fetchAggregation, 
-  fetchAggregationId,
   fetchPlayerAggregationCurrentPoints 
 } from '../../services/progressService';
 import './Progress.scss';
@@ -30,7 +29,8 @@ const Progress = () => {
         }
 
         // First fetch the aggregation ID
-        const aggregationId = await fetchAggregationId(fetchEndpoint, promotionId);
+        // const aggregationId = await fetchAggregationId(fetchEndpoint, promotionId);
+        const aggregationId = "d6cbffd7-d0e2-45a2-82b6-938df1db3736";
         console.log('Fetched aggregation ID:', aggregationId);
 
         if (!aggregationId) {
