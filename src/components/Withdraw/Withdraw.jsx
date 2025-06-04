@@ -3,7 +3,7 @@ import { useGlobal } from '../../context/GlobalContext';
 import { fetchWithdrawOptions, fetchFreespinValue, withdrawBalance } from '../../services/withdrawService';
 import { fetchPlayerBalances } from '../../services/balanceService';
 import Modal from './WithdrawModal';
-import socketService, { SOCKET_EVENTS } from '../../services/socketService';
+// import socketService, { SOCKET_EVENTS } from '../../services/socketService';
 import './Withdraw.scss';
 
 const Withdraw = () => {
@@ -55,24 +55,24 @@ const Withdraw = () => {
     }
   }, [globalConfig.promotionId, globalConfig.token, fetchEndpoint]);
 
-  useEffect(() => {
-    // Subscribe to withdraw status updates
-    const withdrawUnsubscribe = socketService.subscribe(
-      SOCKET_EVENTS.WITHDRAW_STATUS,
-      (status) => {
-        setWithdrawStatus(status);
-        if (status.status === 'succeeded') {
-          setIsModalOpen(false);
-          setSelectedGame(null);
-          setSelectedProvider(null);
-        }
-      }
-    );
+  // useEffect(() => {
+  //   // Subscribe to withdraw status updates
+  //   const withdrawUnsubscribe = socketService.subscribe(
+  //     SOCKET_EVENTS.WITHDRAW_STATUS,
+  //     (status) => {
+  //       setWithdrawStatus(status);
+  //       if (status.status === 'succeeded') {
+  //         setIsModalOpen(false);
+  //         setSelectedGame(null);
+  //         setSelectedProvider(null);
+  //       }
+  //     }
+  //   );
 
-    return () => {
-      withdrawUnsubscribe();
-    };
-  }, []);
+  //   return () => {
+  //     withdrawUnsubscribe();
+  //   };
+  // }, []);
 
   const handleProviderSelect = (provider) => {
     setSelectedProvider(provider);
